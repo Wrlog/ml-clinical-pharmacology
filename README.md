@@ -110,13 +110,16 @@ analysis/                     one script per analysis
   02_ssri_response_prediction.R
   03_ssri_response_with_symptoms.R
 python/
-  make_figures.py             renders all dashboard/README figures (matplotlib, seaborn)
+  make_figures.py             renders the static dashboard/README figures (matplotlib, seaborn)
 R/
   supervised_helpers.R        shared model specs, tuning, evaluation and export
   build_dashboard_data.R      bundles results/*.csv into dashboard/results.js
   install_packages.R
 results/                      metrics, ROC curves, importance, PCA output (CSV) and R figures (PNG)
-index.html, dashboard/        static dashboard served by GitHub Pages; figures in dashboard/figures/ (SVG)
+index.html, dashboard/        static dashboard served by GitHub Pages
+  charts.js                   interactive PCA scatter plots (plotly.js, loaded from a CDN)
+  figures/                    pre-rendered SVGs for every other figure, and as a fallback
+                              for the interactive ones when plotly.js cannot be loaded
 data/                         input CSVs go here (not included; see data/README.md)
 ```
 
@@ -130,7 +133,9 @@ pip install -r python/requirements.txt
 python python/make_figures.py
 ```
 
-Open `index.html` in a browser to view the dashboard locally. The full pipeline takes roughly 10–15 minutes
+Open `index.html` in a browser to view the dashboard locally. The PCA scatter plots are drawn in the
+browser with plotly.js (hover for the subject behind a point, zoom, click the legend to isolate a cluster);
+they read `dashboard/results.js`, so they need no build step of their own. The full pipeline takes roughly 10–15 minutes
 on an 8-core laptop.
 
 ## Notes

@@ -54,7 +54,22 @@ main { padding-top: 24px; padding-bottom: 24px; }
 .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
 .fig { margin: 4px 0 6px; }
 .fig img { display: block; width: 100%; height: auto; }
+.fig img[hidden] { display: none; }
 .fig.narrow img { max-width: 440px; margin: 0 auto; }
+
+/* plotly.js figures (dashboard/charts.js) */
+.plot { width: 100%; height: 290px; }
+.plot-tall { height: 360px; }
+@media (max-width: 900px) { .plot { height: 260px; } .plot-tall { height: 320px; } }
+.plot .modebar { background: none !important; }
+.plot .modebar-btn path { fill: var(--text-muted) !important; }
+.plot .modebar-btn:hover path { fill: var(--text-primary) !important; }
+.plot .hoverlayer .hovertext { filter: drop-shadow(0 2px 6px rgba(11, 11, 11, 0.10)); }
+/* the shape key: identity is never carried by colour alone */
+.key { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 2px 0 0 4px;
+  color: var(--text-secondary); font-size: 12px; }
+.key-item { display: inline-flex; align-items: center; gap: 5px; }
+.key-item svg { fill: none; stroke: var(--text-secondary); stroke-width: 1.4; overflow: visible; }
 .note { color: var(--text-muted); font-size: 13px; }
 .steps, .plain, .findings { padding-left: 20px; margin: 8px 0; }
 .steps li, .plain li, .findings li { margin-bottom: 8px; color: var(--text-secondary); }

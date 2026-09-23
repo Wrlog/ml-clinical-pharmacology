@@ -7,6 +7,7 @@
   <meta name="description" content="Results: unsupervised clustering of gene expression and supervised prediction of SSRI remission in major depressive disorder.">
   <link rel="stylesheet" href="dashboard/style.css">
   <script src="dashboard/results.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-basic-dist-min@4.1.1/plotly-basic.min.js" integrity="sha384-N2HZsG+IG/3J8CwhGGYz/kmzZ0sprpPWwjhor9ZI4lxuf47i9DXK2/NDGxMaJiEb" crossorigin="anonymous"></script>
 </head>
 <body>
   <header class="site-header">
@@ -15,7 +16,7 @@
       <h1>Can machine learning find diagnosis and predict antidepressant response?</h1>
       <p class="lede">Three R analyses on synthetic cohorts: clustering gene-expression profiles by depression diagnosis,
         then predicting SSRI remission from clinical, symptom and biological data with four classifiers.
-        Figures rendered with matplotlib and seaborn.</p>
+        Figures rendered with matplotlib and seaborn; the PCA scatter plots are interactive — hover a point, zoom, or click the legend.</p>
       <nav class="tabs" role="tablist" aria-label="Analyses">
         <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
         <button role="tab" data-tab="unsupervised" aria-selected="false">1 · Gene-expression clustering</button>
@@ -87,7 +88,11 @@
               <select id="unsup-cluster-select"></select>
             </label>
           </div>
-          <figure class="fig"><img id="unsup-pca" alt="PCA scatter plot coloured by cluster"></figure>
+          <figure class="fig">
+            <div id="unsup-pca-plot" class="plot plot-tall" role="img" aria-label="Interactive PCA scatter plot coloured by cluster"></div>
+            <img id="unsup-pca" alt="PCA scatter plot coloured by cluster" hidden>
+            <div class="key" id="unsup-diag-key" aria-label="Diagnosis shapes"></div>
+          </figure>
         </article>
       </div>
       <div class="grid-3">
@@ -167,7 +172,10 @@
           <article class="card">
             <h2>Training cohort in PCA space</h2>
             <p class="sub" data-role="pca-sub"></p>
-            <figure class="fig"><img data-role="pca" alt="PCA scatter of the training cohort by outcome"></figure>
+            <figure class="fig">
+              <div data-role="pca-plot" class="plot" role="img" aria-label="Interactive PCA scatter of the training cohort by outcome"></div>
+              <img data-role="pca" alt="PCA scatter of the training cohort by outcome" hidden>
+            </figure>
           </article>
         </div>
       </div>
@@ -182,11 +190,12 @@
   </main>
 
   <footer class="wrap footer">
-    <p>Analyses in R (tidymodels, ranger, kernlab, xgboost, mclust); figures in Python (matplotlib, seaborn).
+    <p>Analyses in R (tidymodels, ranger, kernlab, xgboost, mclust); figures in Python (matplotlib, seaborn); PCA scatter plots interactive with plotly.js.
       See the <a href="https://github.com/Wrlog/ml-clinical-pharmacology">repository</a> to reproduce.
       <span id="generated"></span></p>
   </footer>
 
+  <script src="dashboard/charts.js"></script>
   <script src="dashboard/app.js"></script>
 </body>
 </html>

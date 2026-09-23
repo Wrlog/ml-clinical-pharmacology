@@ -1,5 +1,6 @@
-/* Dashboard: figures are pre-rendered SVGs (python/make_figures.py);
-   tiles and tables read window.RESULTS (dashboard/results.js). */
+/* Dashboard: the PCA scatter plots are drawn live with plotly.js (dashboard/charts.js);
+   the remaining figures are pre-rendered SVGs (python/make_figures.py).
+   Tiles, tables and the interactive plots all read window.RESULTS (dashboard/results.js). */
 (function () {
   "use strict";
 
@@ -65,6 +66,14 @@
     if (img.getAttribute("src") !== src) img.setAttribute("src", src);
     if (alt) img.setAttribute("alt", alt);
   }
+  const CH = window.CHARTS;
+  const interactive = Boolean(CH && CH.ready);
+  /* When plotly.js is unavailable, hide its container and show the pre-rendered SVG. */
+  function fallback(plotNode, img, src, alt) {
+    if (plotNode) plotNode.hidden = true;
+    img.hidden = false;
+    setImg(img, src, alt);
+  }
 
   /* ---------- overview ---------- */
   function renderOverview() {
@@ -96,13 +105,23 @@
     ]);
     const sel = document.getElementById("unsup-cluster-select");
     const img = document.getElementById("unsup-pca");
+    const plot = document.getElementById("unsup-pca-plot");
+    const key = document.getElementById("unsup-diag-key");
+    const drawPCA = () => {
+      const label = clusterLabel(sel.value);
+      const alt = `PCA scatter coloured by ${label}`;
+      if (!interactive) return fallback(plot, img, `${FIG}/unsupervised/pca_${sel.value}.svg`, alt);
+      plot.setAttribute("aria-label", `${alt}. Subject-level values are in the cluster table below.`);
+      CH.unsupervisedPCA(plot, u.cluster_assignments, u.pca_variance, sel.value, label)
+        .then((diags) => CH.diagnosisKey(key, diags))
+        .catch(() => fallback(plot, img, `${FIG}/unsupervised/pca_${sel.value}.svg`, alt));
+    };
     if (!sel.options.length) {
       ari.forEach((r) => sel.append(el("option", { value: r.clustering }, clusterLabel(r.clustering))));
       sel.value = "gmm_auto";
-      sel.addEventListener("change", () => setImg(img, `${FIG}/unsupervised/pca_${sel.value}.svg`,
-        `PCA scatter coloured by ${clusterLabel(sel.value)}`));
+      sel.addEventListener("change", drawPCA);
     }
-    setImg(img, `${FIG}/unsupervised/pca_${sel.value}.svg`, `PCA scatter coloured by ${clusterLabel(sel.value)}`);
+    drawPCA();
   }
 
   /* ---------- 2 & 3. supervised ---------- */
@@ -169,8 +188,14 @@
     q("cm-sub").textContent = `${MODEL_LABEL[st.model]} · ${fsLabel}. Percentages are of each actual class.`;
     setImg(q("confusion"), `${base}/confusion_${st.model}_${st.fs}.svg`, `Confusion matrix, ${MODEL_LABEL[st.model]}, ${fsLabel}`);
 
+    const pcaAlt = `PCA of training cohort, ${fsLabel}`;
     q("pca-sub").textContent = `${fsLabel}. Coloured by observed outcome.`;
-    setImg(q("pca"), `${base}/pca_${st.fs}.svg`, `PCA of training cohort, ${fsLabel}`);
+    if (interactive) {
+      CH.supervisedPCA(q("pca-plot"), res.pca_scores, res.pca_variance, st.fs, key)
+        .catch(() => fallback(q("pca-plot"), q("pca"), `${base}/pca_${st.fs}.svg`, pcaAlt));
+    } else {
+      fallback(q("pca-plot"), q("pca"), `${base}/pca_${st.fs}.svg`, pcaAlt);
+    }
 
     // metrics table
     const cols = [["model", "Model"], ["feature_set", "Features"], ["cv_roc_auc", "CV AUC"], ["roc_auc", "Test AUC"], ["accuracy", "Accuracy"],
