@@ -1,0 +1,16 @@
+# Input data are course-provided and not redistributed
+data/*.csv
+
+# R / RStudio
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# OS / editor
+.DS_Store
+__MACOSX/
+Thumbs.db
+desktop.ini
+.ipynb_checkpoints/
+Rplots.pdf

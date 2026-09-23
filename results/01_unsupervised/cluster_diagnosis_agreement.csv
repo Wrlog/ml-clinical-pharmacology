@@ -1,0 +1,11 @@
+"clustering","n_clusters","adjusted_rand_index"
+"kmeans_3",3,0.735562310030395
+"kmeans_4",4,1
+"kmeans_5",5,0.962825808289417
+"hclust_complete_4",4,1
+"hclust_single_4",4,1
+"hclust_average_4",4,1
+"gmm_auto",4,1
+"gmm_3",3,0.735562310030395
+"gmm_4",4,1
+"gmm_5",5,0.863626184966784
