@@ -25,7 +25,7 @@ major depressive disorder (MDD):
    averages 67.6 in training vs 49.8 in the test cohort). The models still order patients correctly, but their predicted
    probabilities shift downwards. Recalibrating or normalizing per site would be needed before using a fixed threshold.
 
-![Test-set ROC curves, analysis 3](results/03_ssri_response_symptoms/figures/roc_curves.png)
+![Test ROC AUC for every model in analyses 2 and 3](dashboard/figures/overview_auc.svg)
 
 ## 1 · Unsupervised clustering of gene expression
 
@@ -46,8 +46,8 @@ scored against the diagnosis with the **adjusted Rand index** (ARI; 1 = perfect 
 | GMM, G = 3 | 3 | 0.74 |
 
 <p>
-  <img src="results/01_unsupervised/figures/pc_gmm_auto.png" width="49%" alt="GMM clusters on the first two principal components">
-  <img src="results/01_unsupervised/figures/expression_boxplots.png" width="49%" alt="Gene expression by diagnosis">
+  <img src="dashboard/figures/unsupervised/pca_gmm_auto.svg" width="49%" alt="GMM clusters on the first two principal components">
+  <img src="dashboard/figures/unsupervised/ari.svg" width="49%" alt="Adjusted Rand index for each clustering">
 </p>
 
 ## 2 · Predicting SSRI remission
@@ -88,8 +88,8 @@ The same design with 12 item-level QIDS-SR baseline symptoms added to the clinic
 No-information rate on the test set: 0.50. CV AUC is mean ± SE over 50 resamples.
 
 <p>
-  <img src="results/03_ssri_response_symptoms/figures/importance_rf_clinical_biomarkers.png" width="49%" alt="Random forest variable importance">
-  <img src="results/03_ssri_response_symptoms/figures/pca_biplot_clinical_biomarkers.png" width="49%" alt="PCA biplot of the training cohort">
+  <img src="dashboard/figures/ssri_symptoms/roc_clinical_biomarkers.svg" width="49%" alt="Test ROC curves with biomarkers">
+  <img src="dashboard/figures/ssri_symptoms/importance_rf_clinical_biomarkers.svg" width="49%" alt="Random forest variable importance">
 </p>
 
 ## Methods
@@ -109,12 +109,14 @@ analysis/                     one script per analysis
   01_unsupervised_gene_expression.R
   02_ssri_response_prediction.R
   03_ssri_response_with_symptoms.R
+python/
+  make_figures.py             renders all dashboard/README figures (matplotlib, seaborn)
 R/
   supervised_helpers.R        shared model specs, tuning, evaluation and export
   build_dashboard_data.R      bundles results/*.csv into dashboard/results.js
   install_packages.R
-results/                      metrics, ROC curves, importance, PCA output (CSV) and figures (PNG)
-index.html, dashboard/        static dashboard served by GitHub Pages
+results/                      metrics, ROC curves, importance, PCA output (CSV) and R figures (PNG)
+index.html, dashboard/        static dashboard served by GitHub Pages; figures in dashboard/figures/ (SVG)
 data/                         input CSVs go here (not included; see data/README.md)
 ```
 
@@ -124,6 +126,8 @@ data/                         input CSVs go here (not included; see data/README.
 Rscript R/install_packages.R
 # put the input CSVs in data/ (see data/README.md), then:
 Rscript run_all.R
+pip install -r python/requirements.txt
+python python/make_figures.py
 ```
 
 Open `index.html` in a browser to view the dashboard locally. The full pipeline takes roughly 10–15 minutes

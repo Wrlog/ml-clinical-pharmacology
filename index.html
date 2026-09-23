@@ -4,9 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ML in Clinical Pharmacology</title>
-  <meta name="description" content="Interactive results: unsupervised clustering of gene expression and supervised prediction of SSRI remission in major depressive disorder.">
+  <meta name="description" content="Results: unsupervised clustering of gene expression and supervised prediction of SSRI remission in major depressive disorder.">
   <link rel="stylesheet" href="dashboard/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
   <script src="dashboard/results.js"></script>
 </head>
 <body>
@@ -15,7 +14,8 @@
       <p class="eyebrow">Machine learning in clinical pharmacology</p>
       <h1>Can machine learning find diagnosis and predict antidepressant response?</h1>
       <p class="lede">Three R analyses on synthetic cohorts: clustering gene-expression profiles by depression diagnosis,
-        then predicting SSRI remission from clinical, symptom and biological data with four classifiers.</p>
+        then predicting SSRI remission from clinical, symptom and biological data with four classifiers.
+        Figures rendered with matplotlib and seaborn.</p>
       <nav class="tabs" role="tablist" aria-label="Analyses">
         <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
         <button role="tab" data-tab="unsupervised" aria-selected="false">1 · Gene-expression clustering</button>
@@ -29,13 +29,26 @@
     <!-- Overview -->
     <section id="tab-overview" class="tab-panel" role="tabpanel">
       <div class="tiles" id="overview-tiles"></div>
+      <article class="card">
+        <h2>Key findings</h2>
+        <ol class="findings">
+          <li><strong>Gene expression separates the diagnoses cleanly.</strong> Four-cluster k-means, all hierarchical linkages and the BIC-selected GMM reproduce the four diagnostic groups exactly.</li>
+          <li><strong>Clinical factors beat chance.</strong> Using sociodemographic factors and MDD severity alone, the linear SVM reaches test AUC 0.90 and accuracy 0.82 (no-information rate 0.50).</li>
+          <li><strong>Biomarkers improve ranking, not always classification.</strong> Test AUC rises to 0.95–1.00, but at the default 0.5 threshold the RBF SVM calls every patient a non-remitter, and gradient boosting finds only about a quarter of remitters.</li>
+          <li><strong>Probabilities don't transfer across sites.</strong> Biomarker levels in the external test cohort (analysis 3) run about 30% lower than in training, so predicted probabilities shift downwards even though the ordering holds.</li>
+        </ol>
+      </article>
+      <article class="card">
+        <h2>Test ROC AUC across all models</h2>
+        <p class="sub">Held-out test set, clinical features vs. with biomarkers added. Dashed line = chance.</p>
+        <figure class="fig"><img id="overview-auc" src="dashboard/figures/overview_auc.svg" alt="Grouped bar chart of test ROC AUC for four models in analyses 2 and 3"></figure>
+      </article>
       <div class="grid-2">
         <article class="card">
           <h2>What's here</h2>
           <ol class="steps">
             <li><strong>Unsupervised clustering.</strong> 30 subjects × 10 genes. PCA, k-means, hierarchical clustering and
-              Gaussian mixture models, scored on how well clusters recover the clinical diagnosis
-              (adjusted Rand index).</li>
+              Gaussian mixture models, scored on how well clusters recover the clinical diagnosis (adjusted Rand index).</li>
             <li><strong>SSRI remission prediction.</strong> 400 patients with major depressive disorder (random 75/25 split). Random forest,
               linear/RBF SVM and gradient boosting, trained on clinical factors alone and then with 9 biological markers added.</li>
             <li><strong>Adding symptom items.</strong> Same question with 12 baseline QIDS-SR symptom items, a predefined 300-patient
@@ -53,20 +66,6 @@
           <p class="note">Data are synthetic teaching datasets and are not redistributed here. Only derived results are published.</p>
         </article>
       </div>
-      <article class="card">
-        <h2>Key findings</h2>
-        <ul class="plain">
-          <li><strong>Gene expression separates the diagnoses cleanly.</strong> Four-cluster k-means, all hierarchical linkages and the BIC-selected GMM reproduce the four diagnostic groups exactly.</li>
-          <li><strong>Clinical factors beat chance.</strong> Using sociodemographic factors and MDD severity alone, the linear SVM reaches test AUC 0.90 and accuracy 0.82 (no-information rate 0.50).</li>
-          <li><strong>Biomarkers improve ranking, not always classification.</strong> Test AUC rises to 0.95–1.00, but at the default 0.5 threshold the RBF SVM calls every patient a non-remitter, and gradient boosting finds only about a quarter of remitters.</li>
-          <li><strong>Probabilities don't transfer across sites.</strong> Biomarker levels in the external test cohort (analysis 3) run about 30% lower than in training, so predicted probabilities shift downwards even though the ordering holds.</li>
-        </ul>
-      </article>
-      <article class="card">
-        <h2>Test ROC AUC across all models</h2>
-        <p class="sub">Held-out test set. Dashed line = AUC 0.5 (chance).</p>
-        <div id="overview-auc" class="chart" style="height:360px"></div>
-      </article>
     </section>
 
     <!-- 1. Unsupervised -->
@@ -76,7 +75,7 @@
         <article class="card">
           <h2>Do clusters recover the diagnosis?</h2>
           <p class="sub">Adjusted Rand index between cluster labels and clinical diagnosis (1 = perfect agreement, 0 = chance).</p>
-          <div id="unsup-ari" class="chart" style="height:380px"></div>
+          <figure class="fig"><img src="dashboard/figures/unsupervised/ari.svg" alt="Bar chart of adjusted Rand index for each clustering"></figure>
         </article>
         <article class="card">
           <div class="card-head">
@@ -88,29 +87,40 @@
               <select id="unsup-cluster-select"></select>
             </label>
           </div>
-          <div id="unsup-pca" class="chart" style="height:380px"></div>
+          <figure class="fig"><img id="unsup-pca" alt="PCA scatter plot coloured by cluster"></figure>
         </article>
       </div>
       <div class="grid-3">
         <article class="card">
           <h2>Choosing k: elbow curve</h2>
           <p class="sub">Within-cluster sum of squares for k-means.</p>
-          <div id="unsup-elbow" class="chart" style="height:280px"></div>
+          <figure class="fig"><img src="dashboard/figures/unsupervised/elbow.svg" alt="Elbow curve"></figure>
         </article>
         <article class="card">
           <h2>Variance explained</h2>
-          <p class="sub">Share of total variance per principal component.</p>
-          <div id="unsup-scree" class="chart" style="height:280px"></div>
+          <p class="sub">Per principal component and cumulative.</p>
+          <figure class="fig"><img src="dashboard/figures/unsupervised/scree.svg" alt="Scree plot"></figure>
         </article>
         <article class="card">
           <h2>PCA loadings</h2>
           <p class="sub">Contribution of each gene to PC1–PC3.</p>
-          <div id="unsup-loadings" class="chart" style="height:280px"></div>
+          <figure class="fig"><img src="dashboard/figures/unsupervised/loadings.svg" alt="Heatmap of PCA loadings"></figure>
         </article>
       </div>
       <article class="card">
-        <h2>Figures from the R pipeline</h2>
-        <div class="gallery" id="unsup-gallery"></div>
+        <h2>Expression by diagnosis</h2>
+        <p class="sub">Each gene separates one diagnostic group from the others. Points are individual subjects.</p>
+        <figure class="fig"><img src="dashboard/figures/unsupervised/expression_boxplots.svg" alt="Box plots of gene expression by diagnosis"></figure>
+      </article>
+      <article class="card">
+        <h2>Hierarchical clustering</h2>
+        <p class="sub">Dendrograms for three linkage methods; leaf labels are subject IDs coloured by diagnosis.</p>
+        <figure class="fig"><img src="dashboard/figures/unsupervised/dendrograms.svg" alt="Dendrograms for complete, average and single linkage"></figure>
+      </article>
+      <article class="card">
+        <h2>Expression distributions</h2>
+        <p class="sub">Kernel density of each gene's expression by diagnosis.</p>
+        <figure class="fig"><img src="dashboard/figures/unsupervised/expression_density.svg" alt="Density plots of gene expression by diagnosis" loading="lazy"></figure>
       </article>
     </section>
 
@@ -134,36 +144,36 @@
               <select data-role="metric"></select>
             </label>
           </div>
-          <div data-role="compare" class="chart" style="height:340px"></div>
+          <figure class="fig"><img data-role="compare" alt="Grouped bar chart comparing models"></figure>
         </article>
         <article class="card">
           <h2>ROC curves (test set)</h2>
           <p class="sub" data-role="roc-sub"></p>
-          <div data-role="roc" class="chart" style="height:340px"></div>
+          <figure class="fig"><img data-role="roc" alt="ROC curves for four models"></figure>
         </article>
       </div>
       <div class="grid-2">
         <article class="card">
           <h2>Variable importance</h2>
           <p class="sub" data-role="imp-sub"></p>
-          <div data-role="importance" class="chart"></div>
+          <figure class="fig"><img data-role="importance" alt="Variable importance bar chart"></figure>
         </article>
         <div class="stack">
           <article class="card">
             <h2>Confusion matrix (test set)</h2>
             <p class="sub" data-role="cm-sub"></p>
-            <div data-role="confusion" class="chart" style="height:250px"></div>
+            <figure class="fig narrow"><img data-role="confusion" alt="Confusion matrix"></figure>
           </article>
           <article class="card">
             <h2>Training cohort in PCA space</h2>
             <p class="sub" data-role="pca-sub"></p>
-            <div data-role="pca" class="chart" style="height:250px"></div>
+            <figure class="fig"><img data-role="pca" alt="PCA scatter of the training cohort by outcome"></figure>
           </article>
         </div>
       </div>
       <article class="card">
         <h2>All metrics</h2>
-        <p class="sub">CV = mean across 50 resamples for the selected hyperparameters; all other columns are on the held-out test set.</p>
+        <p class="sub">CV = mean ± SE across 50 resamples for the selected hyperparameters; all other columns are on the held-out test set.</p>
         <div class="table-wrap"><table data-role="table"></table></div>
       </article>
     </template>
@@ -172,11 +182,11 @@
   </main>
 
   <footer class="wrap footer">
-    <p>Code: R (tidymodels, ranger, kernlab, xgboost, mclust, factoextra). See the <a href="https://github.com/Wrlog/ml-clinical-pharmacology">repository</a> to reproduce.
+    <p>Analyses in R (tidymodels, ranger, kernlab, xgboost, mclust); figures in Python (matplotlib, seaborn).
+      See the <a href="https://github.com/Wrlog/ml-clinical-pharmacology">repository</a> to reproduce.
       <span id="generated"></span></p>
   </footer>
 
-  <div id="tooltip-live" class="sr-only" aria-live="polite"></div>
   <script src="dashboard/app.js"></script>
 </body>
 </html>
