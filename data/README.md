@@ -1,8 +1,7 @@
 # Data
 
-The input datasets are synthetic teaching datasets and are **not included** in this repository.
-Only derived results (in `results/`) are published. To re-run the analyses, place CSVs with the
-columns below in this folder.
+The input data are synthetic teaching datasets and aren't included in the repo; only the derived results
+in `results/` are. To re-run the analyses, put CSVs with these columns in this folder.
 
 | File | Rows | Columns |
 |---|---|---|

@@ -13,10 +13,10 @@
   <header class="site-header">
     <div class="wrap">
       <p class="eyebrow">Machine learning in clinical pharmacology</p>
-      <h1>Can machine learning find diagnosis and predict antidepressant response?</h1>
+      <h1>Clustering depression diagnoses and predicting SSRI remission</h1>
       <p class="lede">Three R analyses on synthetic cohorts: clustering gene-expression profiles by depression diagnosis,
         then predicting SSRI remission from clinical, symptom and biological data with four classifiers.
-        Figures rendered with matplotlib and seaborn; the PCA scatter plots are interactive — hover a point, zoom, or click the legend.</p>
+        Figures are made with matplotlib and seaborn. You can hover, zoom and click the legend on the PCA scatter plots.</p>
       <nav class="tabs" role="tablist" aria-label="Analyses">
         <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
         <button role="tab" data-tab="unsupervised" aria-selected="false">1 · Gene-expression clustering</button>
@@ -31,40 +31,40 @@
     <section id="tab-overview" class="tab-panel" role="tabpanel">
       <div class="tiles" id="overview-tiles"></div>
       <article class="card">
-        <h2>Key findings</h2>
+        <h2>Findings</h2>
         <ol class="findings">
-          <li><strong>Gene expression separates the diagnoses cleanly.</strong> Four-cluster k-means, all hierarchical linkages and the BIC-selected GMM reproduce the four diagnostic groups exactly.</li>
-          <li><strong>Clinical factors beat chance.</strong> Using sociodemographic factors and MDD severity alone, the linear SVM reaches test AUC 0.90 and accuracy 0.82 (no-information rate 0.50).</li>
-          <li><strong>Biomarkers improve ranking, not always classification.</strong> Test AUC rises to 0.95–1.00, but at the default 0.5 threshold the RBF SVM calls every patient a non-remitter, and gradient boosting finds only about a quarter of remitters.</li>
-          <li><strong>Probabilities don't transfer across sites.</strong> Biomarker levels in the external test cohort (analysis 3) run about 30% lower than in training, so predicted probabilities shift downwards even though the ordering holds.</li>
+          <li><strong>Clusters match diagnosis.</strong> Four-cluster k-means, all three hierarchical linkages and the BIC-selected GMM reproduce the four diagnostic groups exactly.</li>
+          <li><strong>Clinical factors alone.</strong> With only sociodemographic factors and MDD severity, the linear SVM gets test AUC 0.90 and accuracy 0.82 (no-information rate 0.50).</li>
+          <li><strong>Adding biomarkers.</strong> Test AUC goes up to 0.95–1.00. At the default 0.5 threshold, though, the RBF SVM calls every patient a non-remitter and gradient boosting finds only about a quarter of remitters.</li>
+          <li><strong>External cohort.</strong> In analysis 3, biomarker levels in the external test cohort are about 30% lower than in training. The models still rank patients in the right order, but the predicted probabilities shift down.</li>
         </ol>
       </article>
       <article class="card">
         <h2>Test ROC AUC across all models</h2>
-        <p class="sub">Held-out test set, clinical features vs. with biomarkers added. Dashed line = chance.</p>
+        <p class="sub">Held-out test set, with and without biomarkers. The dashed line is chance.</p>
         <figure class="fig"><img id="overview-auc" src="dashboard/figures/overview_auc.svg" alt="Grouped bar chart of test ROC AUC for four models in analyses 2 and 3"></figure>
       </article>
       <div class="grid-2">
         <article class="card">
-          <h2>What's here</h2>
+          <h2>The three analyses</h2>
           <ol class="steps">
-            <li><strong>Unsupervised clustering.</strong> 30 subjects × 10 genes. PCA, k-means, hierarchical clustering and
-              Gaussian mixture models, scored on how well clusters recover the clinical diagnosis (adjusted Rand index).</li>
-            <li><strong>SSRI remission prediction.</strong> 400 patients with major depressive disorder (random 75/25 split). Random forest,
-              linear/RBF SVM and gradient boosting, trained on clinical factors alone and then with 9 biological markers added.</li>
-            <li><strong>Adding symptom items.</strong> Same question with 12 baseline QIDS-SR symptom items, a predefined 300-patient
+            <li><strong>Gene-expression clustering.</strong> 30 subjects × 10 genes. PCA, k-means, hierarchical clustering and
+              Gaussian mixture models, scored by how well the clusters recover the clinical diagnosis (adjusted Rand index).</li>
+            <li><strong>SSRI remission.</strong> 400 patients with major depressive disorder, random 75/25 split. Random forest,
+              linear and RBF SVMs and gradient boosting, trained on clinical factors with and without 9 biological markers.</li>
+            <li><strong>Symptom items.</strong> The same question with 12 baseline QIDS-SR symptom items added, a predefined 300-patient
               training cohort and a 100-patient external test cohort.</li>
           </ol>
         </article>
         <article class="card">
-          <h2>How models were evaluated</h2>
+          <h2>Evaluation</h2>
           <ul class="plain">
-            <li>Hyperparameters tuned with <strong>5× repeated, stratified 10-fold cross-validation</strong> on the training set only.</li>
-            <li>Every model scored <strong>once</strong> on the held-out test set.</li>
+            <li>Hyperparameters were tuned with 5× repeated, stratified 10-fold cross-validation on the training set only.</li>
+            <li>Each model was scored once on the held-out test set.</li>
             <li>Remission (<code>response = 1</code>) is the positive class for sensitivity, specificity and PPV/NPV.</li>
-            <li>Test accuracy compared with the <strong>no-information rate</strong> (majority-class share) using a one-sided exact binomial test.</li>
+            <li>Test accuracy is compared with the no-information rate (the majority-class share) using a one-sided exact binomial test.</li>
           </ul>
-          <p class="note">Data are synthetic teaching datasets and are not redistributed here. Only derived results are published.</p>
+          <p class="note">The data are synthetic teaching datasets and aren't redistributed here. Only derived results are published.</p>
         </article>
       </div>
     </section>
@@ -82,7 +82,7 @@
           <div class="card-head">
             <div>
               <h2>Subjects on the first two principal components</h2>
-              <p class="sub">Colour = cluster, shape = true diagnosis.</p>
+              <p class="sub">Colour is the cluster, shape is the true diagnosis.</p>
             </div>
             <label class="control">Clustering
               <select id="unsup-cluster-select"></select>
@@ -114,7 +114,7 @@
       </div>
       <article class="card">
         <h2>Expression by diagnosis</h2>
-        <p class="sub">Each gene separates one diagnostic group from the others. Points are individual subjects.</p>
+        <p class="sub">Each gene separates one diagnostic group from the rest. Points are individual subjects.</p>
         <figure class="fig"><img src="dashboard/figures/unsupervised/expression_boxplots.svg" alt="Box plots of gene expression by diagnosis"></figure>
       </article>
       <article class="card">
@@ -190,8 +190,8 @@
   </main>
 
   <footer class="wrap footer">
-    <p>Analyses in R (tidymodels, ranger, kernlab, xgboost, mclust); figures in Python (matplotlib, seaborn); PCA scatter plots interactive with plotly.js.
-      See the <a href="https://github.com/Wrlog/ml-clinical-pharmacology">repository</a> to reproduce.
+    <p>Analyses in R (tidymodels, ranger, kernlab, xgboost, mclust), figures in Python (matplotlib, seaborn), interactive PCA plots with plotly.js.
+      The code to reproduce it all is in the <a href="https://github.com/Wrlog/ml-clinical-pharmacology">repository</a>.
       <span id="generated"></span></p>
   </footer>
 
